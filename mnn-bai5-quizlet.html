@@ -295,6 +295,36 @@
             color: white;
             font-size: 1.5rem;
         }
+
+        .topline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 20px;
+            padding: 0.4rem 0.8rem;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            user-select: none;
+        }
+
+        .chip:hover {
+            background: rgba(102, 126, 234, 0.2);
+            transform: scale(1.1);
+        }
+
+        .chip:active {
+            transform: scale(0.95);
+        }
     </style>
 </head>
 <body>
@@ -332,7 +362,7 @@
     </div>
 
     <div class="keyboard-hints">
-        ← → Chuyển thẻ | Space/Enter Lật | S Xáo trộn | F Toàn màn hình
+        ← → Chuyển thẻ | Space/Enter Lật | L Nghe | Shift+L Nghe câu | S Xáo trộn | F Toàn màn hình
     </div>
 
     <script>
@@ -962,6 +992,60 @@
         const cardCounter = document.getElementById('cardCounter');
         const topicLabel = document.getElementById('topicLabel');
 
+        // Web Speech API - Japanese voices
+        let jaVoices = [];
+        function loadVoices(){
+            jaVoices = window.speechSynthesis.getVoices()
+                .filter(v => v.lang && v.lang.toLowerCase().startsWith('ja'));
+        }
+        if ('speechSynthesis' in window) {
+            loadVoices();
+            window.speechSynthesis.onvoiceschanged = loadVoices;
+        }
+
+        function speakJa(text, {rate=1, pitch=1, volume=1} = {}){
+            if (!('speechSynthesis' in window)) return false;
+            if (!text || !text.trim()) return false;
+            // Hủy phát hiện tại để tránh chồng âm
+            window.speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(text);
+            // Chọn giọng ja-JP
+            const exact = jaVoices.find(v => v.lang.toLowerCase() === 'ja-jp');
+            const anyJa = jaVoices[0];
+            u.voice = exact || anyJa || null;
+            u.lang  = (exact || anyJa)?.lang || 'ja-JP';
+            u.rate  = rate;
+            u.pitch = pitch;
+            u.volume= volume;
+            window.speechSynthesis.speak(u);
+            return true;
+        }
+
+        function stopSpeak(){ 
+            try{ window.speechSynthesis.cancel(); }catch(_){} 
+        }
+
+        // Hàm phát âm cho mặt trước
+        function speakFront(){
+            const card = cards[currentIndex];
+            const text = card.kana || card.jp;
+            speakJa(text);
+        }
+
+        // Hàm phát âm từ ở mặt sau
+        function speakBackWord(){
+            const card = cards[currentIndex];
+            const text = card.kana || card.jp;
+            speakJa(text);
+        }
+
+        // Hàm phát âm câu ví dụ ở mặt sau
+        function speakBackExample(){
+            const card = cards[currentIndex];
+            const text = card.exJp;
+            speakJa(text);
+        }
+
         // Preload images
         function preloadImages() {
             cards.forEach(card => {
@@ -977,7 +1061,10 @@
             
             // Front side
             cardFront.innerHTML = `
-                <span class="topic-badge">${card.topic}</span>
+                <div class="topline">
+                    <span class="topic-badge">${card.topic}</span>
+                    <button class="chip" id="speakFrontBtn" title="Nghe phát âm (L)" aria-label="Phát âm từ" onclick="event.stopPropagation(); speakFront();">🔊</button>
+                </div>
                 ${card.img ? `
                     <img src="${card.img}" alt="${card.vi}" class="card-image">
                     <div class="image-credit">Ảnh: <a href="${card.credit}" target="_blank" rel="noopener">Wikimedia Commons</a></div>
@@ -989,7 +1076,13 @@
 
             // Back side
             cardBack.innerHTML = `
-                <span class="topic-badge">${card.topic}</span>
+                <div class="topline">
+                    <span class="topic-badge">${card.topic}</span>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="chip" id="speakBackWordBtn" title="Nghe từ (L)" aria-label="Phát âm từ" onclick="event.stopPropagation(); speakBackWord();">🔊</button>
+                        <button class="chip" id="speakBackExBtn" title="Nghe câu ví dụ (Shift+L)" aria-label="Phát âm câu ví dụ" onclick="event.stopPropagation(); speakBackExample();">🔊📝</button>
+                    </div>
+                </div>
                 ${card.img ? `
                     <img src="${card.img}" alt="${card.vi}" class="card-image">
                 ` : ''}
@@ -1069,6 +1162,23 @@
                 case 'f':
                 case 'F':
                     toggleFullscreen();
+                    break;
+                case 'l':
+                case 'L':
+                    e.preventDefault();
+                    if (e.shiftKey) {
+                        // Shift+L: phát âm câu ví dụ (chỉ khi đang ở mặt sau)
+                        if (isFlipped) {
+                            speakBackExample();
+                        }
+                    } else {
+                        // L: phát âm từ (mặt trước hoặc mặt sau)
+                        if (isFlipped) {
+                            speakBackWord();
+                        } else {
+                            speakFront();
+                        }
+                    }
                     break;
             }
         });
