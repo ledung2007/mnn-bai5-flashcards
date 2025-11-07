@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minna no Nihongo - Bài 5 Flashcards</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            text-align: center;
+            color: #333;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-container {
+            max-width: 800px;
+            margin: 0.5rem auto;
+            width: 100%;
+            padding: 0 1rem;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .controls {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            background: #667eea;
+            color: white;
+            cursor: pointer;
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #5568d3;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            position: relative;
+        }
+
+        .card-container {
+            width: 100%;
+            max-width: 800px;
+            height: 500px;
+            perspective: 1000px;
+            position: relative;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .card-front {
+            z-index: 2;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+            background: #f8f9fa;
+        }
+
+        .topic-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: #667eea;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+            align-self: flex-start;
+        }
+
+        .card-image {
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .jp-text {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .kana-text {
+            font-size: 1.3rem;
+            color: #666;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .romaji-text {
+            font-size: 1.1rem;
+            color: #888;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-style: italic;
+        }
+
+        .vi-text {
+            font-size: 1.5rem;
+            color: #764ba2;
+            text-align: center;
+            font-weight: 500;
+            margin-bottom: 2rem;
+        }
+
+        .example-box {
+            background: white;
+            padding: 1rem;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            margin-top: auto;
+        }
+
+        .example-jp {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .example-vi {
+            font-size: 1rem;
+            color: #666;
+        }
+
+        .image-credit {
+            font-size: 0.7rem;
+            color: #999;
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+
+        .image-credit a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            z-index: 10;
+        }
+
+        .nav-btn:hover {
+            background: white;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .nav-btn.prev {
+            left: 1rem;
+        }
+
+        .nav-btn.next {
+            right: 1rem;
+        }
+
+        .keyboard-hints {
+            text-align: center;
+            color: white;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .card-container {
+                height: 450px;
+            }
+
+            .jp-text {
+                font-size: 2rem;
+            }
+
+            .kana-text {
+                font-size: 1.1rem;
+            }
+
+            .vi-text {
+                font-size: 1.2rem;
+            }
+
+            .nav-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>みんなの日本語 - Bài 5 Flashcards</h1>
+        <div class="progress-container">
+            <div class="progress-info">
+                <span id="cardCounter">1 / 48</span>
+                <span id="topicLabel">Phương tiện</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+        <div class="controls">
+            <button class="btn" onclick="flipCard()">🔄 Lật thẻ (Space)</button>
+            <button class="btn" onclick="shuffleCards()">🔀 Xáo trộn (S)</button>
+            <button class="btn" onclick="toggleFullscreen()">⛶ Toàn màn hình (F)</button>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <button class="nav-btn prev" onclick="prevCard()">‹</button>
+        <div class="card-container">
+            <div class="card" id="card" onclick="flipCard()">
+                <div class="card-face card-front" id="cardFront">
+                    <div class="loading">Đang tải...</div>
+                </div>
+                <div class="card-face card-back" id="cardBack">
+                    <div class="loading">Đang tải...</div>
+                </div>
+            </div>
+        </div>
+        <button class="nav-btn next" onclick="nextCard()">›</button>
+    </div>
+
+    <div class="keyboard-hints">
+        ← → Chuyển thẻ | Space/Enter Lật | S Xáo trộn | F Toàn màn hình
+    </div>
+
+    <script>
+        const cards = [
+            // PHƯƠNG TIỆN (8 thẻ)
+            {
+                topic: "Phương tiện",
+                jp: "飛行機",
+                kana: "ひこうき",
+                romaji: "hikōki",
+                vi: "máy bay",
+                exJp: "ひこうきで東京へ行きます。",
+                exVi: "Tôi đi Tokyo bằng máy bay。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Airplane_taking_off.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Airplane_taking_off.jpg"
+            },
+            {
+                topic: "Phương tiện",
+                jp: "船",
+                kana: "ふね",
+                romaji: "fune",
+                vi: "tàu thủy, thuyền",
+                exJp: "ふねで大阪へ行きます。",
+                exVi: "Tôi đi Osaka bằng tàu。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Containership.JPG",
+                credit: "https://commons.wikimedia.org/wiki/File:Containership.JPG"
+            },
+            {
+                topic: "Phương tiện",
+                jp: "電車",
+                kana: "でんしゃ",
+                romaji: "densha",
+                vi: "tàu điện",
+                exJp: "でんしゃで会社へ行きます。",
+                exVi: "Tôi đi làm bằng tàu điện。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/JR_COMMUTER_TRAIN_KYOTO_STATION_JAPAN_JUNE_2012_(7408283698).jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:JR_COMMUTER_TRAIN_KYOTO_STATION_JAPAN_JUNE_2012_(7408283698).jpg"
+            },
+            {
+                topic: "Phương tiện",
+                jp: "地下鉄",
+                kana: "ちかてつ",
+                romaji: "chikatetsu",
+                vi: "tàu điện ngầm",
+                exJp: "ちかてつで新宿へ行きます。",
+                exVi: "Tôi đi Shinjuku bằng tàu điện ngầm。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Union_Station_subway_platform.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Union_Station_subway_platform.jpg"
+            },
+            {
+                topic: "Phương tiện",
+                jp: "新幹線",
+                kana: "しんかんせん",
+                romaji: "shinkansen",
+                vi: "tàu siêu tốc",
+                exJp: "しんかんせんで京都へ行きます。",
+                exVi: "Tôi đi Kyoto bằng Shinkansen。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/JRC_N700_series_Z28.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:JRC_N700_series_Z28.jpg"
+            },
+            {
+                topic: "Phương tiện",
+                jp: "バス",
+                kana: "バス",
+                romaji: "basu",
+                vi: "xe buýt",
+                exJp: "バスで学校へ行きます。",
+                exVi: "Tôi đến trường bằng xe buýt。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Tokyo_Bus_Fuso_Aero_Ace.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Tokyo_Bus_Fuso_Aero_Ace.jpg"
+            },
+            {
+                topic: "Phương tiện",
+                jp: "タクシー",
+                kana: "タクシー",
+                romaji: "takushī",
+                vi: "taxi",
+                exJp: "タクシーでうちへ帰ります。",
+                exVi: "Tôi về nhà bằng taxi。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Crowntaxi.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Crowntaxi.jpg"
+            },
+            {
+                topic: "Phương tiện",
+                jp: "自転車",
+                kana: "じてんしゃ",
+                romaji: "jitensha",
+                vi: "xe đạp",
+                exJp: "じてんしゃで駅へ行きます。",
+                exVi: "Tôi đi đến ga bằng xe đạp。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/City_bike_1.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:City_bike_1.jpg"
+            },
+
+            // ĐỊA ĐIỂM & ĐỘNG TỪ (12 thẻ)
+            {
+                topic: "Địa điểm",
+                jp: "学校",
+                kana: "がっこう",
+                romaji: "gakkō",
+                vi: "trường học",
+                exJp: "バスで学校へ行きます。",
+                exVi: "Tôi đi đến trường bằng xe buýt。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/School_building.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:School_building.jpg"
+            },
+            {
+                topic: "Địa điểm",
+                jp: "会社",
+                kana: "かいしゃ",
+                romaji: "kaisha",
+                vi: "công ty",
+                exJp: "でんしゃで会社へ行きます。",
+                exVi: "Tôi đi công ty bằng tàu điện。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Office-building.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Office-building.jpg"
+            },
+            {
+                topic: "Địa điểm",
+                jp: "駅",
+                kana: "えき",
+                romaji: "eki",
+                vi: "ga, nhà ga",
+                exJp: "じてんしゃで駅へ行きます。",
+                exVi: "Tôi đi đến ga bằng xe đạp。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Tokyo_Station_Marunouchi_Building.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Tokyo_Station_Marunouchi_Building.jpg"
+            },
+            {
+                topic: "Địa điểm",
+                jp: "うち",
+                kana: "うち",
+                romaji: "uchi",
+                vi: "nhà, gia đình",
+                exJp: "タクシーでうちへ帰ります。",
+                exVi: "Tôi về nhà bằng taxi。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Japanese_House.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Japanese_House.jpg"
+            },
+            {
+                topic: "Địa điểm",
+                jp: "スーパー",
+                kana: "スーパー",
+                romaji: "sūpā",
+                vi: "siêu thị",
+                exJp: "あるいてスーパーへ行きます。",
+                exVi: "Tôi đi bộ đến siêu thị。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Supermarket.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Supermarket.jpg"
+            },
+            {
+                topic: "Người",
+                jp: "友だち",
+                kana: "ともだち",
+                romaji: "tomodachi",
+                vi: "bạn bè",
+                exJp: "友だちと大阪へ行きます。",
+                exVi: "Tôi đi Osaka với bạn。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Group_of_friends.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Group_of_friends.jpg"
+            },
+            {
+                topic: "Người",
+                jp: "家族",
+                kana: "かぞく",
+                romaji: "kazoku",
+                vi: "gia đình",
+                exJp: "家族と京都へ行きます。",
+                exVi: "Tôi đi Kyoto với gia đình。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Family_portrait.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Family_portrait.jpg"
+            },
+            {
+                topic: "Người",
+                jp: "ひとりで",
+                kana: "ひとりで",
+                romaji: "hitori de",
+                vi: "một mình",
+                exJp: "ひとりで東京へ行きます。",
+                exVi: "Tôi đi Tokyo một mình。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Alone.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Alone.jpg"
+            },
+            {
+                topic: "Động từ",
+                jp: "行きます",
+                kana: "いきます",
+                romaji: "ikimasu",
+                vi: "đi",
+                exJp: "バスで学校へ行きます。",
+                exVi: "Tôi đi đến trường bằng xe buýt。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Walking_forward.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Walking_forward.jpg"
+            },
+            {
+                topic: "Động từ",
+                jp: "来ます",
+                kana: "きます",
+                romaji: "kimasu",
+                vi: "đến",
+                exJp: "友だちがうちへ来ます。",
+                exVi: "Bạn tôi đến nhà。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Coming.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Coming.jpg"
+            },
+            {
+                topic: "Động từ",
+                jp: "帰ります",
+                kana: "かえります",
+                romaji: "kaerimasu",
+                vi: "về",
+                exJp: "タクシーでうちへ帰ります。",
+                exVi: "Tôi về nhà bằng taxi。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Going_home.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Going_home.jpg"
+            },
+
+            // THỜI GIAN - TUẦN/THÁNG/NĂM (10 thẻ)
+            {
+                topic: "Thời gian",
+                jp: "先週",
+                kana: "せんしゅう",
+                romaji: "senshū",
+                vi: "tuần trước",
+                exJp: "先週京都へ行きました。",
+                exVi: "Tuần trước tôi đã đi Kyoto。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar_week.png",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar_week.png"
+            },
+            {
+                topic: "Thời gian",
+                jp: "今週",
+                kana: "こんしゅう",
+                romaji: "konshū",
+                vi: "tuần này",
+                exJp: "今週大阪へ行きます。",
+                exVi: "Tuần này tôi sẽ đi Osaka。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar_week.png",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar_week.png"
+            },
+            {
+                topic: "Thời gian",
+                jp: "来週",
+                kana: "らいしゅう",
+                romaji: "raishū",
+                vi: "tuần sau",
+                exJp: "来週東京へ行きます。",
+                exVi: "Tuần sau tôi sẽ đi Tokyo。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar_week.png",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar_week.png"
+            },
+            {
+                topic: "Thời gian",
+                jp: "先月",
+                kana: "せんげつ",
+                romaji: "sengetsu",
+                vi: "tháng trước",
+                exJp: "先月日本へ行きました。",
+                exVi: "Tháng trước tôi đã đi Nhật。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar.jpg"
+            },
+            {
+                topic: "Thời gian",
+                jp: "今月",
+                kana: "こんげつ",
+                romaji: "kongetsu",
+                vi: "tháng này",
+                exJp: "今月ベトナムへ帰ります。",
+                exVi: "Tháng này tôi về Việt Nam。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar.jpg"
+            },
+            {
+                topic: "Thời gian",
+                jp: "来月",
+                kana: "らいげつ",
+                romaji: "raigetsu",
+                vi: "tháng sau",
+                exJp: "来月韓国へ行きます。",
+                exVi: "Tháng sau tôi sẽ đi Hàn Quốc。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar.jpg"
+            },
+            {
+                topic: "Thời gian",
+                jp: "去年",
+                kana: "きょねん",
+                romaji: "kyonen",
+                vi: "năm ngoái",
+                exJp: "去年中国へ行きました。",
+                exVi: "Năm ngoái tôi đã đi Trung Quốc。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar.jpg"
+            },
+            {
+                topic: "Thời gian",
+                jp: "今年",
+                kana: "ことし",
+                romaji: "kotoshi",
+                vi: "năm nay",
+                exJp: "今年日本へ行きます。",
+                exVi: "Năm nay tôi sẽ đi Nhật。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar.jpg"
+            },
+            {
+                topic: "Thời gian",
+                jp: "来年",
+                kana: "らいねん",
+                romaji: "rainen",
+                vi: "năm sau",
+                exJp: "来年アメリカへ行きます。",
+                exVi: "Năm sau tôi sẽ đi Mỹ。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar.jpg"
+            },
+            {
+                topic: "Thời gian",
+                jp: "いつ",
+                kana: "いつ",
+                romaji: "itsu",
+                vi: "khi nào",
+                exJp: "いつ日本へ行きますか。",
+                exVi: "Khi nào bạn đi Nhật?",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Question_mark.svg",
+                credit: "https://commons.wikimedia.org/wiki/File:Question_mark.svg"
+            },
+
+            // NGÀY TRONG THÁNG (20 thẻ - các ngày đặc biệt + mẫu)
+            {
+                topic: "Ngày tháng",
+                jp: "ついたち",
+                kana: "ついたち",
+                romaji: "tsuitachi",
+                vi: "ngày 1",
+                exJp: "１月ついたちに東京へ行きます。",
+                exVi: "Tôi đi Tokyo vào ngày 1 tháng 1。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar.jpg"
+            },
+            {
+                topic: "Ngày tháng",
+                jp: "ふつか",
+                kana: "ふつか",
+                romaji: "futsuka",
+                vi: "ngày 2",
+                exJp: "２月ふつかに大阪へ行きます。",
+                exVi: "Tôi đi Osaka vào ngày 2 tháng 2。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar.jpg"
+            },
+            {
+                topic: "Ngày tháng",
+                jp: "みっか",
+                kana: "みっか",
+                romaji: "mikka",
+                vi: "ngày 3",
+                exJp: "３月みっかに京都へ行きます。",
+                exVi: "Tôi đi Kyoto vào ngày 3 tháng 3。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar.jpg"
+            },
+            {
+                topic: "Ngày tháng",
+                jp: "よっか",
+                kana: "よっか",
+                romaji: "yokka",
+                vi: "ngày 4",
+                exJp: "４月よっかに会社へ行きます。",
+                exVi: "Tôi đi công ty vào ngày 4 tháng 4。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar.jpg"
+            },
+            {
+                topic: "Ngày tháng",
+                jp: "いつか",
+                kana: "いつか",
+                romaji: "itsuka",
+                vi: "ngày 5",
+                exJp: "５月いつかに学校へ行きます。",
+                exVi: "Tôi đến trường vào ngày 5 tháng 5。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar.jpg"
+            },
+            {
+                topic: "Ngày tháng",
+                jp: "むいか",
+                kana: "むいか",
+                romaji: "muika",
+                vi: "ngày 6",
+                exJp: "６月むいかに帰ります。",
+                exVi: "Tôi về nhà vào ngày 6 tháng 6。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar.jpg"
+            },
+            {
+                topic: "Ngày tháng",
+                jp: "なのか",
+                kana: "なのか",
+                romaji: "nanoka",
+                vi: "ngày 7",
+                exJp: "７月なのかに来ます。",
+                exVi: "Tôi sẽ đến vào ngày 7 tháng 7。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar.jpg"
+            },
+            {
+                topic: "Ngày tháng",
+                jp: "ようか",
+                kana: "ようか",
+                romaji: "yōka",
+                vi: "ngày 8",
+                exJp: "８月ようかに東京へ行きます。",
+                exVi: "Tôi đi Tokyo vào ngày 8 tháng 8。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar.jpg"
+            },
+            {
+                topic: "Ngày tháng",
+                jp: "ここのか",
+                kana: "ここのか",
+                romaji: "kokonoka",
+                vi: "ngày 9",
+                exJp: "９月ここのかに大阪へ行きます。",
+                exVi: "Tôi đi Osaka vào ngày 9 tháng 9。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar.jpg"
+            },
+            {
+                topic: "Ngày tháng",
+                jp: "とおか",
+                kana: "とおか",
+                romaji: "tōka",
+                vi: "ngày 10",
+                exJp: "１０月とおかに帰ります。",
+                exVi: "Tôi về vào ngày 10 tháng 10。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar.jpg"
+            },
+            {
+                topic: "Ngày tháng",
+                jp: "じゅうよっか",
+                kana: "じゅうよっか",
+                romaji: "jūyokka",
+                vi: "ngày 14",
+                exJp: "２月じゅうよっかに京都へ行きます。",
+                exVi: "Tôi đi Kyoto vào ngày 14 tháng 2。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar.jpg"
+            },
+            {
+                topic: "Ngày tháng",
+                jp: "はつか",
+                kana: "はつか",
+                romaji: "hatsuka",
+                vi: "ngày 20",
+                exJp: "３月はつかに東京へ行きます。",
+                exVi: "Tôi đi Tokyo vào ngày 20 tháng 3。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar.jpg"
+            },
+            {
+                topic: "Ngày tháng",
+                jp: "にじゅうよっか",
+                kana: "にじゅうよっか",
+                romaji: "nijūyokka",
+                vi: "ngày 24",
+                exJp: "１２月にじゅうよっかに帰ります。",
+                exVi: "Tôi về vào ngày 24 tháng 12。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar.jpg"
+            },
+            {
+                topic: "Ngày tháng",
+                jp: "〜にち",
+                kana: "〜にち",
+                romaji: "~nichi",
+                vi: "ngày ~ (11,12,13,15-19,21-23,25-31)",
+                exJp: "１５にち（じゅうごにち）に会社へ行きます。",
+                exVi: "Tôi đi công ty vào ngày 15。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar.jpg"
+            },
+
+            // THÁNG (12 thẻ)
+            {
+                topic: "Tháng",
+                jp: "１月",
+                kana: "いちがつ",
+                romaji: "ichigatsu",
+                vi: "tháng 1",
+                exJp: "１月に日本へ行きます。",
+                exVi: "Tôi đi Nhật vào tháng 1。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar.jpg"
+            },
+            {
+                topic: "Tháng",
+                jp: "２月",
+                kana: "にがつ",
+                romaji: "nigatsu",
+                vi: "tháng 2",
+                exJp: "２月に京都へ行きます。",
+                exVi: "Tôi đi Kyoto vào tháng 2。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar.jpg"
+            },
+            {
+                topic: "Tháng",
+                jp: "３月",
+                kana: "さんがつ",
+                romaji: "sangatsu",
+                vi: "tháng 3",
+                exJp: "３月に大阪へ行きます。",
+                exVi: "Tôi đi Osaka vào tháng 3。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar.jpg"
+            },
+            {
+                topic: "Tháng",
+                jp: "４月",
+                kana: "しがつ",
+                romaji: "shigatsu",
+                vi: "tháng 4",
+                exJp: "４月に学校へ行きます。",
+                exVi: "Tôi đến trường vào tháng 4。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar.jpg"
+            },
+            {
+                topic: "Tháng",
+                jp: "５月",
+                kana: "ごがつ",
+                romaji: "gogatsu",
+                vi: "tháng 5",
+                exJp: "５月に東京へ行きます。",
+                exVi: "Tôi đi Tokyo vào tháng 5。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar.jpg"
+            },
+            {
+                topic: "Tháng",
+                jp: "６月",
+                kana: "ろくがつ",
+                romaji: "rokugatsu",
+                vi: "tháng 6",
+                exJp: "６月に帰ります。",
+                exVi: "Tôi về vào tháng 6。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar.jpg"
+            },
+            {
+                topic: "Tháng",
+                jp: "７月",
+                kana: "しちがつ",
+                romaji: "shichigatsu",
+                vi: "tháng 7",
+                exJp: "７月に会社へ行きます。",
+                exVi: "Tôi đi công ty vào tháng 7。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar.jpg"
+            },
+            {
+                topic: "Tháng",
+                jp: "８月",
+                kana: "はちがつ",
+                romaji: "hachigatsu",
+                vi: "tháng 8",
+                exJp: "８月にベトナムへ帰ります。",
+                exVi: "Tôi về Việt Nam vào tháng 8。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar.jpg"
+            },
+            {
+                topic: "Tháng",
+                jp: "９月",
+                kana: "くがつ",
+                romaji: "kugatsu",
+                vi: "tháng 9",
+                exJp: "９月に学校へ行きます。",
+                exVi: "Tôi đến trường vào tháng 9。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar.jpg"
+            },
+            {
+                topic: "Tháng",
+                jp: "１０月",
+                kana: "じゅうがつ",
+                romaji: "jūgatsu",
+                vi: "tháng 10",
+                exJp: "１０月に日本へ行きます。",
+                exVi: "Tôi đi Nhật vào tháng 10。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar.jpg"
+            },
+            {
+                topic: "Tháng",
+                jp: "１１月",
+                kana: "じゅういちがつ",
+                romaji: "jūichigatsu",
+                vi: "tháng 11",
+                exJp: "１１月に京都へ行きます。",
+                exVi: "Tôi đi Kyoto vào tháng 11。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar.jpg"
+            },
+            {
+                topic: "Tháng",
+                jp: "１２月",
+                kana: "じゅうにがつ",
+                romaji: "jūnigatsu",
+                vi: "tháng 12",
+                exJp: "１２月に帰ります。",
+                exVi: "Tôi về vào tháng 12。",
+                img: "https://commons.wikimedia.org/wiki/Special:FilePath/Calendar.jpg",
+                credit: "https://commons.wikimedia.org/wiki/File:Calendar.jpg"
+            },
+        ];
+
+        let currentIndex = 0;
+        let isFlipped = false;
+        const cardElement = document.getElementById('card');
+        const cardFront = document.getElementById('cardFront');
+        const cardBack = document.getElementById('cardBack');
+        const progressFill = document.getElementById('progressFill');
+        const cardCounter = document.getElementById('cardCounter');
+        const topicLabel = document.getElementById('topicLabel');
+
+        // Preload images
+        function preloadImages() {
+            cards.forEach(card => {
+                if (card.img) {
+                    const img = new Image();
+                    img.src = card.img;
+                }
+            });
+        }
+
+        function renderCard() {
+            const card = cards[currentIndex];
+            
+            // Front side
+            cardFront.innerHTML = `
+                <span class="topic-badge">${card.topic}</span>
+                ${card.img ? `
+                    <img src="${card.img}" alt="${card.vi}" class="card-image">
+                    <div class="image-credit">Ảnh: <a href="${card.credit}" target="_blank" rel="noopener">Wikimedia Commons</a></div>
+                ` : ''}
+                <div class="jp-text">${card.jp}</div>
+                <div class="kana-text">${card.kana}</div>
+                <div class="romaji-text">${card.romaji}</div>
+            `;
+
+            // Back side
+            cardBack.innerHTML = `
+                <span class="topic-badge">${card.topic}</span>
+                ${card.img ? `
+                    <img src="${card.img}" alt="${card.vi}" class="card-image">
+                ` : ''}
+                <div class="vi-text">${card.vi}</div>
+                <div class="example-box">
+                    <div class="example-jp">${card.exJp}</div>
+                    <div class="example-vi">${card.exVi}</div>
+                </div>
+            `;
+
+            // Update progress
+            progressFill.style.width = `${((currentIndex + 1) / cards.length) * 100}%`;
+            cardCounter.textContent = `${currentIndex + 1} / ${cards.length}`;
+            topicLabel.textContent = card.topic;
+
+            // Reset flip state
+            isFlipped = false;
+            cardElement.classList.remove('flipped');
+        }
+
+        function flipCard() {
+            isFlipped = !isFlipped;
+            if (isFlipped) {
+                cardElement.classList.add('flipped');
+            } else {
+                cardElement.classList.remove('flipped');
+            }
+        }
+
+        function nextCard() {
+            currentIndex = (currentIndex + 1) % cards.length;
+            renderCard();
+        }
+
+        function prevCard() {
+            currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+            renderCard();
+        }
+
+        function shuffleCards() {
+            for (let i = cards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [cards[i], cards[j]] = [cards[j], cards[i]];
+            }
+            currentIndex = 0;
+            renderCard();
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log('Fullscreen error:', err);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'ArrowLeft':
+                    prevCard();
+                    break;
+                case 'ArrowRight':
+                    nextCard();
+                    break;
+                case ' ':
+                case 'Enter':
+                    e.preventDefault();
+                    flipCard();
+                    break;
+                case 's':
+                case 'S':
+                    shuffleCards();
+                    break;
+                case 'f':
+                case 'F':
+                    toggleFullscreen();
+                    break;
+            }
+        });
+
+        // Initialize
+        preloadImages();
+        renderCard();
+    </script>
+</body>
+</html>
