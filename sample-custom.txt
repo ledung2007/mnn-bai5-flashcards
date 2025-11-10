@@ -1,0 +1,54 @@
+=== Card ===
+Topic: Phương tiện
+JP: 飛行機
+Kana: ひこうき
+Romaji: hikōki
+VI: máy bay
+Example JP: ひこうきで東京へ行きます。
+Example VI: Tôi đi Tokyo bằng máy bay。
+Image: https://commons.wikimedia.org/wiki/Special:FilePath/Airplane_taking_off.jpg
+Credit: https://commons.wikimedia.org/wiki/File:Airplane_taking_off.jpg
+
+=== Card ===
+Topic: Phương tiện
+JP: 船
+Kana: ふね
+Romaji: fune
+VI: tàu thủy, thuyền
+Example JP: ふねで大阪へ行きます。
+Example VI: Tôi đi Osaka bằng tàu。
+Image: https://commons.wikimedia.org/wiki/Special:FilePath/Containership.JPG
+Credit: https://commons.wikimedia.org/wiki/File:Containership.JPG
+
+=== Card ===
+Topic: Phương tiện
+JP: 電車
+Kana: でんしゃ
+Romaji: densha
+VI: tàu điện
+Example JP: でんしゃで会社へ行きます。
+Example VI: Tôi đi làm bằng tàu điện。
+Image: https://commons.wikimedia.org/wiki/Special:FilePath/JR_COMMUTER_TRAIN_KYOTO_STATION_JAPAN_JUNE_2012_(7408283698).jpg
+Credit: https://commons.wikimedia.org/wiki/File:JR_COMMUTER_TRAIN_KYOTO_STATION_JAPAN_JUNE_2012_(7408283698).jpg
+
+=== Card ===
+Topic: Địa điểm
+JP: 学校
+Kana: がっこう
+Romaji: gakkō
+VI: trường học
+Example JP: バスで学校へ行きます。
+Example VI: Tôi đi đến trường bằng xe buýt。
+Image: https://commons.wikimedia.org/wiki/Special:FilePath/School_building.jpg
+Credit: https://commons.wikimedia.org/wiki/File:School_building.jpg
+
+=== Card ===
+Topic: Địa điểm
+JP: 会社
+Kana: かいしゃ
+Romaji: kaisha
+VI: công ty
+Example JP: でんしゃで会社へ行きます。
+Example VI: Tôi đi công ty bằng tàu điện。
+Image: https://commons.wikimedia.org/wiki/Special:FilePath/Office-building.jpg
+Credit: https://commons.wikimedia.org/wiki/File:Office-building.jpg
