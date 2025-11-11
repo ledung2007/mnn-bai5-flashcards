@@ -1,0 +1,6 @@
+topic	jp	kana	romaji	vi	exJp	exVi	img	credit
+Phương tiện	飛行機	ひこうき	hikōki	máy bay	ひこうきで東京へ行きます。	Tôi đi Tokyo bằng máy bay。	https://commons.wikimedia.org/wiki/Special:FilePath/Airplane_taking_off.jpg	https://commons.wikimedia.org/wiki/File:Airplane_taking_off.jpg
+Phương tiện	船	ふね	fune	tàu thủy, thuyền	ふねで大阪へ行きます。	Tôi đi Osaka bằng tàu。	https://commons.wikimedia.org/wiki/Special:FilePath/Containership.JPG	https://commons.wikimedia.org/wiki/File:Containership.JPG
+Phương tiện	電車	でんしゃ	densha	tàu điện	でんしゃで会社へ行きます。	Tôi đi làm bằng tàu điện。	https://commons.wikimedia.org/wiki/Special:FilePath/JR_COMMUTER_TRAIN_KYOTO_STATION_JAPAN_JUNE_2012_(7408283698).jpg	https://commons.wikimedia.org/wiki/File:JR_COMMUTER_TRAIN_KYOTO_STATION_JAPAN_JUNE_2012_(7408283698).jpg
+Địa điểm	学校	がっこう	gakkō	trường học	バスで学校へ行きます。	Tôi đi đến trường bằng xe buýt。	https://commons.wikimedia.org/wiki/Special:FilePath/School_building.jpg	https://commons.wikimedia.org/wiki/File:School_building.jpg
+Địa điểm	会社	かいしゃ	kaisha	công ty	でんしゃで会社へ行きます。	Tôi đi công ty bằng tàu điện。	https://commons.wikimedia.org/wiki/Special:FilePath/Office-building.jpg	https://commons.wikimedia.org/wiki/File:Office-building.jpg

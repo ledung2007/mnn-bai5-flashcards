@@ -323,6 +323,189 @@
         .chip:active {
             transform: scale(0.95);
         }
+
+        /* Import Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            color: #333;
+            font-size: 1.5rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #999;
+            cursor: pointer;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .close-btn:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .import-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab-btn {
+            padding: 0.7rem 1.2rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-family: 'Noto Sans JP', sans-serif;
+            font-size: 0.95rem;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            font-weight: 500;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .import-textarea {
+            width: 100%;
+            min-height: 300px;
+            padding: 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: 'Noto Sans JP', monospace;
+            font-size: 0.9rem;
+            resize: vertical;
+            margin-bottom: 1rem;
+        }
+
+        .import-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .file-upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 1rem;
+        }
+
+        .file-upload-area:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+
+        .file-upload-area.drag-over {
+            border-color: #667eea;
+            background: #f0f3ff;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .format-info {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            color: #555;
+        }
+
+        .format-info pre {
+            background: white;
+            padding: 0.5rem;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin-top: 0.5rem;
+        }
+
+        .import-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-end;
+        }
+
+        .status-message {
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .status-message.show {
+            display: block;
+        }
+
+        .status-message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
     </style>
 </head>
 <body>
@@ -340,6 +523,7 @@
         <div class="controls">
             <button class="btn" onclick="flipCard()">🔄 Lật thẻ (Space)</button>
             <button class="btn" onclick="shuffleCards()">🔀 Xáo trộn (S)</button>
+            <button class="btn" onclick="openImportModal()">📥 Nạp từ Text (I)</button>
             <button class="btn" onclick="toggleFullscreen()">⛶ Toàn màn hình (F)</button>
         </div>
     </div>
@@ -360,7 +544,107 @@
     </div>
 
     <div class="keyboard-hints">
-        ← → Chuyển thẻ | Space/Enter Lật | L Nghe | Shift+L Nghe câu | S Xáo trộn | F Toàn màn hình
+        ← → Chuyển thẻ | Space/Enter Lật | L Nghe | Shift+L Nghe câu | S Xáo trộn | I Nạp từ | F Toàn màn hình
+    </div>
+
+    <!-- Import Modal -->
+    <div id="importModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>📥 Nạp Flashcards từ Text</h2>
+                <button class="close-btn" onclick="closeImportModal()">&times;</button>
+            </div>
+
+            <div id="statusMessage" class="status-message"></div>
+
+            <div class="import-tabs">
+                <button class="tab-btn active" onclick="switchTab('text')">Nhập Text</button>
+                <button class="tab-btn" onclick="switchTab('file')">Upload File</button>
+                <button class="tab-btn" onclick="switchTab('help')">Hướng dẫn</button>
+            </div>
+
+            <!-- Text Input Tab -->
+            <div id="textTab" class="tab-content active">
+                <div class="format-info">
+                    <strong>Hỗ trợ 3 định dạng:</strong> Custom, TSV, JSON
+                </div>
+                <textarea id="importTextarea" class="import-textarea" placeholder="Dán nội dung flashcards vào đây...
+
+Ví dụ định dạng Custom:
+=== Card ===
+Topic: Phương tiện
+JP: 飛行機
+Kana: ひこうき
+Romaji: hikōki
+VI: máy bay
+Example JP: ひこうきで東京へ行きます。
+Example VI: Tôi đi Tokyo bằng máy bay。
+Image: https://...
+Credit: https://...
+
+=== Card ===
+...
+"></textarea>
+                <div class="import-actions">
+                    <button class="btn" onclick="closeImportModal()">Hủy</button>
+                    <button class="btn" onclick="importFromText()">✓ Nạp Dữ Liệu</button>
+                </div>
+            </div>
+
+            <!-- File Upload Tab -->
+            <div id="fileTab" class="tab-content">
+                <div class="format-info">
+                    <strong>Hỗ trợ các file:</strong> .txt, .tsv, .json
+                </div>
+                <div class="file-upload-area" id="fileUploadArea" onclick="document.getElementById('fileInput').click()">
+                    <p>📁 Kéo thả file vào đây hoặc click để chọn file</p>
+                    <p style="font-size: 0.85rem; color: #999;">Hỗ trợ: .txt, .tsv, .json</p>
+                </div>
+                <input type="file" id="fileInput" class="file-input" accept=".txt,.tsv,.json" onchange="handleFileSelect(event)">
+                <div class="import-actions">
+                    <button class="btn" onclick="closeImportModal()">Hủy</button>
+                </div>
+            </div>
+
+            <!-- Help Tab -->
+            <div id="helpTab" class="tab-content">
+                <div class="format-info">
+                    <h3>📖 Định dạng Custom</h3>
+                    <p>Dễ đọc, dễ viết bằng tay:</p>
+                    <pre>=== Card ===
+Topic: Phương tiện
+JP: 飛行機
+Kana: ひこうき
+Romaji: hikōki
+VI: máy bay
+Example JP: ひこうきで東京へ行きます。
+Example VI: Tôi đi Tokyo bằng máy bay。
+Image: https://...
+Credit: https://...</pre>
+
+                    <h3>📊 Định dạng TSV (Tab-separated)</h3>
+                    <p>Tương thích với Excel, Google Sheets:</p>
+                    <pre>topic	jp	kana	romaji	vi	exJp	exVi	img	credit
+Phương tiện	飛行機	ひこうき	hikōki	máy bay	ひこうきで東京へ行きます。	Tôi đi Tokyo bằng máy bay。	https://...	https://...</pre>
+
+                    <h3>💻 Định dạng JSON</h3>
+                    <p>Cho lập trình viên:</p>
+                    <pre>[
+  {
+    "topic": "Phương tiện",
+    "jp": "飛行機",
+    "kana": "ひこうき",
+    "romaji": "hikōki",
+    "vi": "máy bay",
+    "exJp": "ひこうきで東京へ行きます。",
+    "exVi": "Tôi đi Tokyo bằng máy bay。",
+    "img": "https://...",
+    "credit": "https://..."
+  }
+]</pre>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -1141,6 +1425,15 @@
 
         // Keyboard controls
         document.addEventListener('keydown', (e) => {
+            // Don't trigger shortcuts when modal is open or typing in textarea
+            if (document.getElementById('importModal').classList.contains('show') &&
+                e.target.tagName !== 'TEXTAREA') {
+                if (e.key === 'Escape') {
+                    closeImportModal();
+                }
+                return;
+            }
+
             switch(e.key) {
                 case 'ArrowLeft':
                     prevCard();
@@ -1157,9 +1450,16 @@
                 case 'S':
                     shuffleCards();
                     break;
+                case 'i':
+                case 'I':
+                    openImportModal();
+                    break;
                 case 'f':
                 case 'F':
                     toggleFullscreen();
+                    break;
+                case 'Escape':
+                    closeImportModal();
                     break;
                 case 'l':
                 case 'L':
@@ -1180,6 +1480,310 @@
                     break;
             }
         });
+
+        // ==================== IMPORT SYSTEM ====================
+
+        // Modal control
+        function openImportModal() {
+            document.getElementById('importModal').classList.add('show');
+        }
+
+        function closeImportModal() {
+            document.getElementById('importModal').classList.remove('show');
+            clearStatusMessage();
+        }
+
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Status message
+        function showStatusMessage(message, type = 'success') {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = `status-message show ${type}`;
+        }
+
+        function clearStatusMessage() {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.className = 'status-message';
+        }
+
+        // ==================== PARSERS ====================
+
+        // Parse Custom Format
+        function parseCustomFormat(text) {
+            const parsedCards = [];
+            const cardBlocks = text.split(/===\s*Card\s*===/i).filter(b => b.trim());
+
+            for (const block of cardBlocks) {
+                const card = {};
+                const lines = block.split('\n');
+
+                for (const line of lines) {
+                    const trimmed = line.trim();
+                    if (!trimmed) continue;
+
+                    // Match "Key: Value" pattern
+                    const match = trimmed.match(/^(Topic|JP|Kana|Romaji|VI|Example\s*JP|Example\s*VI|Image|Credit)\s*:\s*(.+)$/i);
+                    if (match) {
+                        const key = match[1].toLowerCase().replace(/\s+/g, '');
+                        const value = match[2].trim();
+
+                        // Map keys to card properties
+                        switch(key) {
+                            case 'topic': card.topic = value; break;
+                            case 'jp': card.jp = value; break;
+                            case 'kana': card.kana = value; break;
+                            case 'romaji': card.romaji = value; break;
+                            case 'vi': card.vi = value; break;
+                            case 'examplejp': card.exJp = value; break;
+                            case 'examplevi': card.exVi = value; break;
+                            case 'image': card.img = value; break;
+                            case 'credit': card.credit = value; break;
+                        }
+                    }
+                }
+
+                // Validate required fields
+                if (card.jp && card.vi) {
+                    // Set defaults for missing fields
+                    card.topic = card.topic || 'Khác';
+                    card.kana = card.kana || card.jp;
+                    card.romaji = card.romaji || '';
+                    card.exJp = card.exJp || '';
+                    card.exVi = card.exVi || '';
+                    card.img = card.img || '';
+                    card.credit = card.credit || '';
+                    parsedCards.push(card);
+                }
+            }
+
+            return parsedCards;
+        }
+
+        // Parse TSV Format
+        function parseTSV(text) {
+            const lines = text.split('\n').filter(l => l.trim());
+            if (lines.length < 2) return [];
+
+            const headers = lines[0].split('\t').map(h => h.trim().toLowerCase());
+            const parsedCards = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split('\t');
+                const card = {};
+
+                headers.forEach((header, index) => {
+                    const value = (values[index] || '').trim();
+
+                    // Map headers to card properties
+                    switch(header) {
+                        case 'topic': card.topic = value; break;
+                        case 'jp': card.jp = value; break;
+                        case 'kana': card.kana = value; break;
+                        case 'romaji': card.romaji = value; break;
+                        case 'vi': card.vi = value; break;
+                        case 'exjp': case 'examplejp': card.exJp = value; break;
+                        case 'exvi': case 'examplevi': card.exVi = value; break;
+                        case 'img': case 'image': card.img = value; break;
+                        case 'credit': card.credit = value; break;
+                    }
+                });
+
+                // Validate required fields
+                if (card.jp && card.vi) {
+                    // Set defaults
+                    card.topic = card.topic || 'Khác';
+                    card.kana = card.kana || card.jp;
+                    card.romaji = card.romaji || '';
+                    card.exJp = card.exJp || '';
+                    card.exVi = card.exVi || '';
+                    card.img = card.img || '';
+                    card.credit = card.credit || '';
+                    parsedCards.push(card);
+                }
+            }
+
+            return parsedCards;
+        }
+
+        // Parse JSON Format
+        function parseJSON(text) {
+            try {
+                const data = JSON.parse(text);
+                const parsedCards = [];
+
+                const cardsArray = Array.isArray(data) ? data : [data];
+
+                for (const item of cardsArray) {
+                    if (item.jp && item.vi) {
+                        const card = {
+                            topic: item.topic || 'Khác',
+                            jp: item.jp,
+                            kana: item.kana || item.jp,
+                            romaji: item.romaji || '',
+                            vi: item.vi,
+                            exJp: item.exJp || '',
+                            exVi: item.exVi || '',
+                            img: item.img || '',
+                            credit: item.credit || ''
+                        };
+                        parsedCards.push(card);
+                    }
+                }
+
+                return parsedCards;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // Smart parser - detects format automatically
+        function parseFlashcards(text) {
+            if (!text || !text.trim()) {
+                throw new Error('Nội dung trống');
+            }
+
+            // Try JSON first
+            if (text.trim().startsWith('[') || text.trim().startsWith('{')) {
+                const jsonCards = parseJSON(text);
+                if (jsonCards && jsonCards.length > 0) {
+                    return { cards: jsonCards, format: 'JSON' };
+                }
+            }
+
+            // Try TSV (check if first line has tabs)
+            if (text.includes('\t')) {
+                const tsvCards = parseTSV(text);
+                if (tsvCards.length > 0) {
+                    return { cards: tsvCards, format: 'TSV' };
+                }
+            }
+
+            // Try Custom format
+            if (text.includes('=== Card ===') || text.match(/^(Topic|JP|Kana|Romaji|VI):/im)) {
+                const customCards = parseCustomFormat(text);
+                if (customCards.length > 0) {
+                    return { cards: customCards, format: 'Custom' };
+                }
+            }
+
+            throw new Error('Không nhận diện được định dạng. Vui lòng kiểm tra lại.');
+        }
+
+        // ==================== IMPORT FUNCTIONS ====================
+
+        function importFromText() {
+            const textarea = document.getElementById('importTextarea');
+            const text = textarea.value;
+
+            try {
+                const result = parseFlashcards(text);
+
+                // Replace cards array
+                cards.length = 0;
+                cards.push(...result.cards);
+
+                // Reset state
+                currentIndex = 0;
+                preloadImages();
+                renderCard();
+
+                // Show success message
+                showStatusMessage(
+                    `✓ Đã nạp thành công ${result.cards.length} thẻ (định dạng ${result.format})`,
+                    'success'
+                );
+
+                // Close modal after 1.5 seconds
+                setTimeout(() => {
+                    closeImportModal();
+                    textarea.value = '';
+                }, 1500);
+
+            } catch (error) {
+                showStatusMessage(`✗ Lỗi: ${error.message}`, 'error');
+            }
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+
+                try {
+                    const result = parseFlashcards(text);
+
+                    // Replace cards array
+                    cards.length = 0;
+                    cards.push(...result.cards);
+
+                    // Reset state
+                    currentIndex = 0;
+                    preloadImages();
+                    renderCard();
+
+                    // Show success message
+                    showStatusMessage(
+                        `✓ Đã nạp thành công ${result.cards.length} thẻ từ file "${file.name}" (định dạng ${result.format})`,
+                        'success'
+                    );
+
+                    // Close modal after 2 seconds
+                    setTimeout(() => {
+                        closeImportModal();
+                    }, 2000);
+
+                } catch (error) {
+                    showStatusMessage(`✗ Lỗi đọc file: ${error.message}`, 'error');
+                }
+            };
+
+            reader.onerror = function() {
+                showStatusMessage('✗ Lỗi đọc file', 'error');
+            };
+
+            reader.readAsText(file);
+        }
+
+        // Drag and drop support
+        const fileUploadArea = document.getElementById('fileUploadArea');
+
+        fileUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.add('drag-over');
+        });
+
+        fileUploadArea.addEventListener('dragleave', () => {
+            fileUploadArea.classList.remove('drag-over');
+        });
+
+        fileUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.remove('drag-over');
+
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                document.getElementById('fileInput').files = files;
+                handleFileSelect({ target: { files: files } });
+            }
+        });
+
+        // ==================== INITIALIZATION ====================
 
         // Initialize
         preloadImages();

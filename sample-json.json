@@ -1,0 +1,57 @@
+[
+  {
+    "topic": "Phương tiện",
+    "jp": "飛行機",
+    "kana": "ひこうき",
+    "romaji": "hikōki",
+    "vi": "máy bay",
+    "exJp": "ひこうきで東京へ行きます。",
+    "exVi": "Tôi đi Tokyo bằng máy bay。",
+    "img": "https://commons.wikimedia.org/wiki/Special:FilePath/Airplane_taking_off.jpg",
+    "credit": "https://commons.wikimedia.org/wiki/File:Airplane_taking_off.jpg"
+  },
+  {
+    "topic": "Phương tiện",
+    "jp": "船",
+    "kana": "ふね",
+    "romaji": "fune",
+    "vi": "tàu thủy, thuyền",
+    "exJp": "ふねで大阪へ行きます。",
+    "exVi": "Tôi đi Osaka bằng tàu。",
+    "img": "https://commons.wikimedia.org/wiki/Special:FilePath/Containership.JPG",
+    "credit": "https://commons.wikimedia.org/wiki/File:Containership.JPG"
+  },
+  {
+    "topic": "Phương tiện",
+    "jp": "電車",
+    "kana": "でんしゃ",
+    "romaji": "densha",
+    "vi": "tàu điện",
+    "exJp": "でんしゃで会社へ行きます。",
+    "exVi": "Tôi đi làm bằng tàu điện。",
+    "img": "https://commons.wikimedia.org/wiki/Special:FilePath/JR_COMMUTER_TRAIN_KYOTO_STATION_JAPAN_JUNE_2012_(7408283698).jpg",
+    "credit": "https://commons.wikimedia.org/wiki/File:JR_COMMUTER_TRAIN_KYOTO_STATION_JAPAN_JUNE_2012_(7408283698).jpg"
+  },
+  {
+    "topic": "Địa điểm",
+    "jp": "学校",
+    "kana": "がっこう",
+    "romaji": "gakkō",
+    "vi": "trường học",
+    "exJp": "バスで学校へ行きます。",
+    "exVi": "Tôi đi đến trường bằng xe buýt。",
+    "img": "https://commons.wikimedia.org/wiki/Special:FilePath/School_building.jpg",
+    "credit": "https://commons.wikimedia.org/wiki/File:School_building.jpg"
+  },
+  {
+    "topic": "Địa điểm",
+    "jp": "会社",
+    "kana": "かいしゃ",
+    "romaji": "kaisha",
+    "vi": "công ty",
+    "exJp": "でんしゃで会社へ行きます。",
+    "exVi": "Tôi đi công ty bằng tàu điện。",
+    "img": "https://commons.wikimedia.org/wiki/Special:FilePath/Office-building.jpg",
+    "credit": "https://commons.wikimedia.org/wiki/File:Office-building.jpg"
+  }
+]
